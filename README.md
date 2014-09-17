@@ -57,7 +57,7 @@ to run TheEggCounter.
 
 Citation
 ========
-If you use TheEggCounter in a scientific research work, you can cite it as
+If you use TheEggCounter in a scientific research work, you could cite it as
 
 Jorge Tornero (2014). TheEggCounter: A tiny but effective application for counting objects over an image. ZENODO. 10.5281/zenodo.11766
 
