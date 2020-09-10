@@ -63,4 +63,8 @@ If you use TheEggCounter in a scientific research work, you could cite it as
 
 Jorge Tornero (2014, 2020). TheEggCounter: A tiny but effective application for counting objects over an image. ZENODO. 10.5281/zenodo.4022391
 
-![Alt text](https://zenodo.org/badge/3808/jtornero/TheEggCounter.png "TheEggCounter DOI Badge")
+
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4022391.svg)](https://doi.org/10.5281/zenodo.4022391)
+
+
