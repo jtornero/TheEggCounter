@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # TheEggCounter.py
 # 
@@ -6,7 +6,7 @@
 # of DEPM (Daily Egg Production Method) fecundity parameter
 # (But you could count many other things on a picture...)
 # 
-# Copyright 2014 Jorge Tornero Nunez http://imasdemase.com
+# Copyright 2014,2020 Jorge Tornero Nunez http://imasdemase.com
 # 
 # This file is part of TheEggCounter, V1.0
 # 
@@ -24,11 +24,11 @@
 # along with TheEggCounter.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys, os
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore, QtWidgets
 from counter_gui import Ui_OnImageCounter as CounterGUI
 from aboutdialog import Ui_aboutDialog as AboutDialog
 
-class ItemCounter(QtGui.QMainWindow):
+class ItemCounter(QtWidgets.QMainWindow):
     """
     This class provides a Main Window with a graphic view 
     where an image with items to be counted is placed and
@@ -43,13 +43,13 @@ class ItemCounter(QtGui.QMainWindow):
                 
     def __init__(self, screenWidth = 1280, screenHeight = 1024):
       
-        QtGui.QMainWindow.__init__(self)
+        QtWidgets.QMainWindow.__init__(self)
         self.setGeometry(0, 0, screenWidth, screenHeight)
         self.countingWindow = CounterGUI()
         self.translateUi()
         self.countingWindow.setupUi(self)
         self.resize(screenWidth,screenHeight)
-        self.scene = QtGui.QGraphicsScene()
+        self.scene = QtWidgets.QGraphicsScene()
         self.countingWindow.imageView.setScene(self.scene)
         
         # Reimplementation of keypress event management
@@ -85,7 +85,6 @@ class ItemCounter(QtGui.QMainWindow):
         aboutTranslatorPath = os.path.join(\
             self.running_dir, 'i18n', 'aboutdialog_{0}.qm'.format(locale))
         
-        print mainTranslatorPath
         
         # Localization
         self.mainTranslator = QtCore.QTranslator()
@@ -115,16 +114,18 @@ class ItemCounter(QtGui.QMainWindow):
         """
         Loads an image from disk and displays it
         """
-        filenameDialog = QtGui.QFileDialog.getOpenFileName(None,
+        filenameDialog = QtWidgets.QFileDialog.getOpenFileName(None,
                     self.tr("Select an image to load"),
-                    './', "JPG/PNG images (*.jpg *.jpeg *.png);")
+                    options=QtWidgets.QFileDialog.DontUseNativeDialog)
         
-        self.filename = str(filenameDialog)
-        
+        self.filename = filenameDialog[0]
+
         pixmap = QtGui.QPixmap(self.filename)
         pixmap = pixmap.scaledToHeight(\
           self.countingWindow.imageView.height(),QtCore.Qt.SmoothTransformation)
-        self.pixmap = QtGui.QGraphicsPixmapItem(pixmap, scene = self.scene)
+        self.pixmap = QtWidgets.QGraphicsPixmapItem(pixmap)
+        self.scene.addItem(self.pixmap)
+        #self.pixmap = QtWidgets.QGraphicsPixmapItem(pixmap, scene = self.scene)
         
         # Reimplementation of the mousePressEvent of the pixmap
         self.pixmap.mousePressEvent = self.manageCounterMouseEvent
@@ -179,9 +180,10 @@ class ItemCounter(QtGui.QMainWindow):
         if pressedMouseButton == QtCore.Qt.LeftButton:
             if keyboardModifier == QtCore.Qt.NoModifier:
                 # Adds a marker in the position of the click
+                # taking into account the diameter of the marker
                 posx = event.pos().x()
                 posy = event.pos().y()
-                self.scene.addEllipse(posx, posy, 7, 7, self.markerPen, self.markerBrush)
+                self.scene.addEllipse(posx-3.5, posy-3.5, 7, 7, self.markerPen, self.markerBrush)
                 self.setItemCount(self.itemCount + 1)
                   
             elif keyboardModifier == QtCore.Qt.ControlModifier:
@@ -194,7 +196,7 @@ class ItemCounter(QtGui.QMainWindow):
                 # Removes the marker under the cursor  
                 posx = event.pos().x()
                 posy = event.pos().y()
-                itemToDelete = self.scene.itemAt(posx,posy)
+                itemToDelete = self.scene.itemAt(posx,posy,QtGui.QTransform())
                 if itemToDelete.type() == 4: # Means is an ellipse (marker)
                     self.scene.removeItem(itemToDelete)
                     self.setItemCount(self.itemCount - 1)
@@ -241,10 +243,10 @@ class ItemCounter(QtGui.QMainWindow):
         destinationFile = filePath + '/' + newFilename
             
         # Firstly we ask for confirmation
-        confirmation = QtGui.QMessageBox(None)
+        confirmation = QtWidgets.QMessageBox(None)
         confirmation.setWindowTitle(self.tr("Confirmation Dialog"))
-        confirmation.setText(QtCore.QString(self.tr(u"<center>This action will:<ol><li>Remove all markers</li><li>Unload the image</li><li>Insert the number of counted items in the image</li><li>Create file %1</li></ol><br><b>Do you want to proceed with the above?</b><center>")).arg(newFilename))
-        btn1 = confirmation.addButton(self.tr(u"Accept"), QtGui.QMessageBox.YesRole)
+        confirmation.setText(self.tr(u"<center>This action will:<ol><li>Remove all markers</li><li>Unload the image</li><li>Insert the number of counted items in the image</li><li>Create file %s</li></ol><br><b>Do you want to proceed with the above?</b><center>") %newFilename)
+        btn1 = confirmation.addButton(self.tr(u"Accept"), QtWidgets.QMessageBox.YesRole)
         
         if confirmation.exec_() == 0: # User agrees
            
@@ -260,7 +262,7 @@ class ItemCounter(QtGui.QMainWindow):
             painter.setFont(font)
             pixmapWidth = pixmap.width()
             
-            countText = QtCore.QString(self.tr(u"Count: %1")).arg(self.getItemCount())
+            countText = self.tr(u"Count: %s") %self.getItemCount()
             fm = QtGui.QFontMetrics(font)
             countTextHeight = fm.boundingRect(countText).height()
                        
@@ -288,7 +290,7 @@ class ItemCounter(QtGui.QMainWindow):
         Sets the count to a integer value and displays its value
         """
         self.itemCount = count
-        text = QtCore.QString(self.tr(u"Counted items: %1")).arg(count)
+        text = self.tr(u"Counted items: %s") %count
         self.countingWindow.counterLabel.setText(text)
           
     def getItemCount(self):
@@ -301,7 +303,7 @@ class ItemCounter(QtGui.QMainWindow):
         """
         Shows an about dialog with license and some simple help
         """
-        dialog = QtGui.QDialog()
+        dialog = QtWidgets.QDialog()
         aboutDialog = AboutDialog()
         aboutDialog.setupUi(dialog)
         dialog.exec_()
@@ -310,19 +312,19 @@ class ItemCounter(QtGui.QMainWindow):
         """
         Function to exit the dialog, asking for confirmation
         """
-        confirmation = QtGui.QMessageBox(None)
+        confirmation = QtWidgets.QMessageBox(None)
         confirmation.setWindowTitle(self.tr("Exiting TheEggCounter"))
         confirmation.setText(self.tr("""<center>Are you sure you want to exit?</b>
             </center>"""))
-        btn1 = confirmation.addButton(self.tr("Accept"), QtGui.QMessageBox.YesRole)
-        btn2 = confirmation.addButton(self.tr("No, thanks"), QtGui.QMessageBox.YesRole)
+        btn1 = confirmation.addButton(self.tr("Accept"), QtWidgets.QMessageBox.YesRole)
+        btn2 = confirmation.addButton(self.tr("No, thanks"), QtWidgets.QMessageBox.YesRole)
         if confirmation.exec_() == 0:
           self.close()
           
 
 if __name__ == "__main__":
     
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     # We get the screen size to set the size of the counter
     primaryScreen = app.desktop().primaryScreen()
     screenWidth = app.desktop().screenGeometry(primaryScreen).width()

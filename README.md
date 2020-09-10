@@ -1,7 +1,7 @@
 TheEggCounter
 =============
 
-(c) 2013, 2104 Jorge Tornero Núñez, http://imasdemase.com @imasdemase
+(c) 2013, 2104, 2020 Jorge Tornero, http://imasdemase.com @imasdemase
 
 A tiny but effective application for counting objects over an image
 
@@ -42,8 +42,10 @@ Dependencies
 ------------
 To be able to run TheEggCounter you will need:
 
-- Python 2.7
-- PyQt4 libraries installed in your system
+- Python 3.x, tested with 3.8
+- PyQt5 libraries installed in your system
+
+Or download one of the binary releases and just execute it.
 
 Installation
 ------------
@@ -59,6 +61,6 @@ Citation
 ========
 If you use TheEggCounter in a scientific research work, you could cite it as
 
-Jorge Tornero (2014). TheEggCounter: A tiny but effective application for counting objects over an image. ZENODO. 10.5281/zenodo.11766
+Jorge Tornero (2014, 2020). TheEggCounter: A tiny but effective application for counting objects over an image. ZENODO. 10.5281/zenodo.4022391
 
 ![Alt text](https://zenodo.org/badge/3808/jtornero/TheEggCounter.png "TheEggCounter DOI Badge")
